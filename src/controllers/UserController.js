@@ -1,3 +1,5 @@
+import Response from '../helpers/Response';
+
 import Authentication from '../middleware/Authentication';
 
 /**
@@ -26,18 +28,10 @@ export default class UserController {
       const token = Authentication.authenticate(user);
       
       delete user.password;
-      res.status(201).json({
-        status: 'success',
-        data: {
-          user,
-          token
-        }
-      });
+      res.header('Authorization', `Bearer ${token}`);
+      return Response.successResponse(res, 201, 'user created successfully', { user, token });
     } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message
-      });
+      return Response.errorResponse(res, 500, error.message);
     }
   }
 
@@ -57,25 +51,12 @@ export default class UserController {
         const token = Authentication.authenticate(user);
         
         delete user.password;
-        return res.status(200).json({
-          status: 'success',
-          data: {
-            user,
-            token
-          }
-        });
+        res.header('Authorization', `Bearer ${token}`);
+        return Response.successResponse(res, 200, 'login successful', { isUser, token });
       }
-      return res.status(404).json({
-        status: 'success',
-        data: {
-          isUser
-        }
-      });
+      return Response.errorResponse(res, 404, 'email or password incorrect', isUser);
     } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message
-      })
+      return Response.errorResponse(res, 500, error.message);
     }
   }
 }
