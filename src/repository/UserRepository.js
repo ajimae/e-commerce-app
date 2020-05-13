@@ -17,8 +17,13 @@ export default class UserRepository {
 	 *
 	 * @return user object
 	 */
-	async registerUser({ firstName, lastName, email, phone, password }) {
-		const userModel = this.model.User({
+	async registerUser(requestObject) {
+
+    const { email, phone, password } = requestObject;
+    const lastName = requestObject.lastName.toString().toLowerCase();
+    const firstName = requestObject.firstName.toString().toLowerCase();
+
+    const userModel = this.model.User({
 			firstName,
 			lastName,
 			email,
@@ -76,6 +81,6 @@ export default class UserRepository {
 			return user;
 		}
 
-		throw new Error('incorrect email or password');
+		return null;
 	}
 }
