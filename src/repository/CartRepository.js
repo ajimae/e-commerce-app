@@ -17,61 +17,91 @@ export default class CartRepository {
 	 * @return Product<Array<object>>
 	 */
 	async addProductToCart(products) {
-
 		const { userId, productId, quantity: Quantity } = products;
 		const quantity = Number.parseInt(Quantity);
 
-    let cart = await this.model.Cart.findOne({ userId });
-    let product = await this.model.Product.findOne({ _id: productId });
+		let cart = await this.model.Cart.findOne({ userId });
+		let product = await this.model.Product.findOne({ _id: productId });
 
-    if (cart) {
-      //cart exists for user
-      let itemIndex = cart.items.findIndex((item) => item.productId == productId);
+		if (cart) {
+			//cart exists for user
+			let itemIndex = cart.items.findIndex((item) => item.productId == productId);
 
-      if (itemIndex > -1) {
-        //product exists in the cart, update the quantity
-        const productItem = cart.items[itemIndex];
-        cart.items[itemIndex].quantity = productItem.quantity + quantity;
-        cart.items[itemIndex].total = productItem.quantity * productItem.price;
-        cart.items[itemIndex].price = productItem.price;
-        cart.items[itemIndex] = productItem;
-        cart.subTotal = cart.items.map((item) => item.total).reduce((acc, next) => acc + next);
-      } else {
-        // product does not exists in cart, add new item
-        const { price: Price } = product;
-        const price = Number.parseInt(Price);
-        const total = price * quantity;
-        cart.items.push({ productId, quantity, price, total });
-        cart.subTotal = cart.items.map((item) => item.total).reduce((acc, next) => acc + next);
-      }
-      const cartItem = await cart.save();
-      return cartItem;
-    } else {
-      // no cart for user, create new cart
-      const { price: Price } = product;
+			if (itemIndex > -1) {
+				//product exists in the cart, update the quantity
+				const productItem = cart.items[itemIndex];
+				cart.items[itemIndex].quantity = productItem.quantity + quantity;
+				cart.items[itemIndex].total = productItem.quantity * productItem.price;
+				cart.items[itemIndex].price = productItem.price;
+				cart.items[itemIndex] = productItem;
+				cart.subTotal = cart.items.map((item) => item.total).reduce((acc, next) => acc + next);
+			} else {
+				// product does not exists in cart, add new item
+				const { price: Price } = product;
+				const price = Number.parseInt(Price);
+				const total = price * quantity;
+				cart.items.push({ productId, quantity, price, total });
+				cart.subTotal = cart.items.map((item) => item.total).reduce((acc, next) => acc + next);
+			}
+			const cartItem = await cart.save();
+			return cartItem;
+		} else {
+			// no cart for user, create new cart
+			const { price: Price } = product;
 
-      const price = Number.parseInt(Price);
-      const total = price * quantity;
-      const newCart = await this.model.Cart({
-        userId,
-        items: [
-          {
-            productId,
-            quantity,
-            price,
-            total,
-          },
-        ],
-        subTotal: parseInt(price * quantity),
-      });
+			const price = Number.parseInt(Price);
+			const total = price * quantity;
+			const newCart = await this.model.Cart({
+				userId,
+				items: [
+					{
+						productId,
+						quantity,
+						price,
+						total,
+					},
+				],
+				subTotal: parseInt(price * quantity),
+			});
 
-      const newCartItem = await newCart.save();
+			const newCartItem = await newCart.save();
 
-      if (newCartItem) {
-        return newCartItem;
-      }
+			if (newCartItem) {
+				return newCartItem;
+			}
 
-      return null;
+			return null;
+		}
+  }
+  
+  async getAllCartItems(userId) {
+    const cartItems = await this.model.Cart.find({ userId });
+    if (cartItems) {
+      return cartItems
     }
+
+    return null;
+  }
+
+	async removeProductFromCart({ userId, productId }) {
+		const cart = await this.model.Cart.findOne({ userId });
+
+		if (cart) {
+			// cart exists
+			const updatedCart = await this.model.Cart.updateMany(
+				{ userId },
+				{ $pull: { items: { productId: { $in: [...productId] } } } }, { upsert: true }
+			);
+
+			if (updatedCart.n > 0) {
+				return updatedCart;
+			}
+
+			// couldn't remove item from cart
+			return null;
+		}
+
+		// cart doesn't exist for that user
+		return null;
 	}
 }

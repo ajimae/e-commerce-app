@@ -11,4 +11,12 @@ export default class CartService {
   addProductToCart(product) {
     return this.cartRepository.addProductToCart(product);
   }
+
+  getAllCartItems(userId) {
+    return this.cartRepository.getAllCartItems(userId);
+  }
+
+  removeProductFromCart(productDetails) {
+    return this.cartRepository.removeProductFromCart(productDetails);
+  }
 }
