@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const userSchema = new mongoose.Schema({
+export const userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   email: {
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: 'regular'
   }
-});
+}, { timestamps: true });
 
 /**
  * @description encrypt and store user password
