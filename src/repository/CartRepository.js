@@ -81,20 +81,27 @@ export default class CartRepository {
     }
 
     return null;
-  }
+	}
+	
+	// TODO: function to handle quantity adjustment
 
 	async removeProductFromCart({ userId, productId }) {
 		const cart = await this.model.Cart.findOne({ userId });
 
 		if (cart) {
 			// cart exists
-			const updatedCart = await this.model.Cart.updateMany(
+			const updated = await this.model.Cart.updateMany(
 				{ userId },
-				{ $pull: { items: { productId: { $in: [...productId] } } } }, { upsert: true }
+				{ $pull: { items: { productId: { $in: [...productId] } } } }, { multi: true, upsert: false }
 			);
 
-			if (updatedCart.n > 0) {
-				return updatedCart;
+			if (updated.n > 0) {
+				// recalculate the subtotal for the cart.
+				const updatedCart = await this.model.Cart.findOne({ userId });
+				const subTotal = updatedCart.items.map((item) => item.total).reduce((acc, next) => acc + next, 0);
+				const updatedSubTotal = await this.model.Cart.updateOne({ userId }, { subTotal });
+				
+				return updatedSubTotal;
 			}
 
 			// couldn't remove item from cart

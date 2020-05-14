@@ -41,7 +41,7 @@ export default class ProductController {
 
 			console.log(cartItems);
 			
-			return Response.successResponse(res, 200, 'cart items fetched successfully', { items: [...cartItems] });
+			return Response.successResponse(res, 200, 'cart items fetched successfully', cartItems);
 		} catch (error) {
 			return Response.errorResponse(res, 500, error.message);
 		}

@@ -43,38 +43,3 @@ const CartSchema = new Schema({
 const Cart = mongoose.model('Cart', CartSchema);
 
 export default Cart;
-
-
-// import mongoose from 'mongoose';
-
-// const { Schema } = mongoose;
-
-// const CartSchema = new Schema(
-//   {
-//     userId: {
-//       type: Schema.Types.ObjectId,
-//       ref: "User"
-//     },
-//     products: [
-//       {
-//         productId: Schema.Types.ObjectId,
-//         quantity: Number,
-//         name: String,
-//         price: Number
-//       }
-//     ],
-//     active: {
-//       type: Boolean,
-//       default: true
-//     },
-//     modifiedOn: {
-//       type: Date,
-//       default: Date.now
-//     }
-//   },
-//   { timestamps: true }
-// );
-
-// const Cart = mongoose.model("Cart", CartSchema);
-
-// export default Cart;

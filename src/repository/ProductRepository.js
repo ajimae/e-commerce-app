@@ -32,7 +32,7 @@ export default class ProductRepository {
 			return product;
 		}
 
-		throw new Error('There was error creating product');
+		return null;
 	}
 
 	/**
