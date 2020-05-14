@@ -12,11 +12,11 @@ const cartService = new CartService(cartRepository);
 const cartController = new CartController(cartService);
 
 const router = Router();
-const { addProductToCart } = cartController;
+const { addProductToCart, getAllCartItems, removeProductFromCart } = cartController;
 const { verifyUserToken } = Authentication;
 
-// router.get('/product/:id', getProduct.bind(productController));
-// router.get('/products', getAllProducts.bind(productController));
+router.get('/cart', verifyUserToken, getAllCartItems.bind(cartController));
 router.post('/cart', verifyUserToken, addProductToCart.bind(cartController));
+router.patch('/cart', verifyUserToken, removeProductFromCart.bind(cartController));
 
 export default router;
