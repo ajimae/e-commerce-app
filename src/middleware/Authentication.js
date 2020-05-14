@@ -50,7 +50,7 @@ export default class {
    * 
    * @return { user payload | error }
    */
-  static verifyUserToken = (req, res, next) => {
+  static verifyUserToken = async (req, res, next) => {
     if (!req.headers.authorization) {
       return res.status(401).json({
         status: 'error',
@@ -69,14 +69,15 @@ export default class {
       });
     }
 
-    if (!req.params.id) {
+    if (!decoded.payload) {
       return res.status(400).json({
         status: 'error',
         message: 'invalid url parameter'
       });
     }
 
-    const user = new models.User().findById(req.params.id);
+    const { _id } = decoded.payload;
+    const user = await models.User.findOne({ _id });
     if (user) {
       req.decoded = decoded.payload;
       next();
