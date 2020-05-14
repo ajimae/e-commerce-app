@@ -74,4 +74,14 @@ export default class OrderController {
       return Response.errorResponse(res, 500, error.message);
     }
   }
+
+  async fulfullOrder(req, res) {
+    const fulfilled = await this.orderService.fulfullOrder(req.params.id);
+    if (fulfilled) {
+      return Response.successResponse(res, 200, 'order cencelled', fulfilled);
+    }
+    return Response.errorResponse(res, 404, 'this order cannot be found');
+  } catch (error) {
+    return Response.errorResponse(res, 500, error.message);
+  }
 }

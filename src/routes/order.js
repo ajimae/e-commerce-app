@@ -12,11 +12,12 @@ const orderService = new OrderService(orderRepository);
 const orderController = new OrderController(orderService);
 
 const router = Router();
-const { addOrder, cancelOrder, getAllOrders } = orderController;
+const { addOrder, cancelOrder, getAllOrders, fulfullOrder } = orderController;
 const { verifyUserToken } = Authentication;
 
 router.get('/order', verifyUserToken, getAllOrders.bind(orderController));
 router.post('/order', verifyUserToken, addOrder.bind(orderController));
+router.post('/fulfill/:id', verifyUserToken, fulfullOrder.bind(orderController));
 router.delete('/order/:id', verifyUserToken, cancelOrder.bind(orderController));
 
 export default router;
