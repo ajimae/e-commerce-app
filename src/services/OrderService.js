@@ -17,5 +17,9 @@ export default class OrderService {
 
 	cancelOrder(orderId) {
 		return this.orderRepository.cancelOrder(orderId);
-	}
+  }
+  
+  fulfullOrder(orderId) {
+    return this.orderRepository.fulfullOrder(orderId);
+  }
 }

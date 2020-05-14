@@ -7,7 +7,7 @@
 export default class CartRepository {
 	constructor(model) {
 		this.model = model;
-  }
+	}
 
 	/**
 	 * @description method to handle order creation
@@ -16,50 +16,71 @@ export default class CartRepository {
 	 *
 	 * @return order<Object>
 	 */
-  async addOrder({ userId, cartId }) {
-    // check to ensure cart is not empty
-    const cart = await this.model.Cart.findOne({ _id: cartId });
-    if (cart.items.length > 0) {
-      // we have products in cart
-      const order = await this.model.Order.findOneAndUpdate({ cartId }, { userId, cartId }, { new: true, upsert: true });
+	async addOrder({ userId, cartId }) {
+		// check to ensure cart is not empty
+		const cart = await this.model.Cart.findOne({ _id: cartId });
+		if (cart.items.length > 0) {
+			// we have products in cart
+			const order = await this.model.Order.findOneAndUpdate(
+				{ cartId },
+				{ userId, cartId, fulfilled: false },
+				{ new: true, upsert: true, useFindAndModify: false }
+			);
 
-      // const ordered = await order.save();
-      if (order) {
-        return order;
-      }
+			// const ordered = await order.save();
+			if (order) {
+				return order;
+			}
 
-      return null;
-    } else {
-      throw new Error('cart is empty');
-    }
-  }
+			return null;
+		} else {
+			throw new Error('cart is empty');
+		}
+	}
 
-  async getAllOrders(userId) {
-    const orders = await this.model.Order.find({ userId });
+	async getAllOrders(userId) {
+		const orders = await this.model.Order.find({ userId });
 
-    if (orders) {
-      return orders;
-    }
+		if (orders) {
+			return orders;
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  /**
-	 * @description method to cancel an order 
+	/**
+	 * @description method to cancel an order
 	 *
 	 * @param req.body
 	 *
 	 * @return
 	 */
-  async cancelOrder(orderId) {
-    const order = await this.model.Order.findOne({ _id: orderId });
-    if (!order.fulfilled) {
-      const removedOrder = await this.model.Order.findOneAndDelete({ _id: orderId }, { useFindAndModify: false });
+	async cancelOrder(orderId) {
+		const order = await this.model.Order.findOne({ _id: orderId });
+		if (!order.fulfilled) {
+			const removedOrder = await this.model.Order.findOneAndDelete({ _id: orderId }, { useFindAndModify: false });
 
-      console.log(removedOrder)
-      return removedOrder;
-    }
+			return removedOrder;
+		}
 
-    throw new Error('cannot cancel order, order has been fulfilled.');
-  }
+		throw new Error('cannot cancel order, order has been fulfilled.');
+	}
+
+	/**
+	 * @description method to fulfill an order
+	 *
+	 * @param req.body
+	 *
+	 * @return
+	 */
+	async fulfullOrder(orderId) {
+		const order = await this.model.Order.findOne({ _id: orderId });
+		if (!order.fulfilled) {
+			const fulfillOrder = await this.model.Order.findOneAndUpdate({ _id: orderId }, { fulfilled: true }, { useFindAndModify: false });
+
+			return fulfillOrder;
+		}
+
+		throw new Error('order has already been fulfilled.');
+	}
 }
