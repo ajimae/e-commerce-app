@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 database.connect();
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((error, req, res, next) => {
   // response to user with 403 error and details
   if (error) {
     next(error);
@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
 
 // Routes
 app.use('/api/v1', routes);
-app.use('*', async (req, res) => {
+app.use('*', async (_, res) => {
   return res.status(404).json({
     status: 'error',
     data: {
