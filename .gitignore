@@ -102,3 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+# coveralls file for repo_token
+.coveralls.yml
