@@ -6,7 +6,6 @@ export default class Database {
 
 	connect() {
     // create database
-    // return this.database.connect(this.config);
     return this.database.connect(this.config, {
       useCreateIndex: true,
       useNewUrlParser: true,

@@ -4,7 +4,11 @@
   "description": "a simple e-commerce application",
   "main": "index.js",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=development nodemon --exec babel-node src/index.js",
+    "start": "node dist/index",
+    "start:dev": "cross-env NODE_ENV=development babel-node index.js",
+    "build": "yarn clean && babel src -d dist/src && babel index.js -d dist",
+    "prepublish": "yarn build",
+    "clean": "rm -rf dist",
     "test": "echo \"No test specified\" && exit 0"
   },
   "repository": "https://github.com/ajimae/e-commerce-app.git",
@@ -13,6 +17,8 @@
   "private": false,
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/runtime": "^7.9.6",
+    "babel-polyfill": "^6.26.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -22,9 +28,12 @@
     "mongoose": "^5.9.13"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.6",
     "@babel/node": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
+    "@babel/register": "^7.9.0",
     "cross-env": "^7.0.2",
     "nodemon": "^2.0.3"
   }
