@@ -14,3 +14,5 @@ process.on('uncaughtException', function (err) {
 
 // Start
 app.listen(process.env.PORT, () => console.log(`server listening on port ${process.env.PORT}`));
+
+export default app;
