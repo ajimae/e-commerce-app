@@ -38,8 +38,6 @@ export default class ProductController {
 				decoded: { _id },
 			} = req;
 			const cartItems = await this.cartService.getAllCartItems(_id);
-
-			console.log(cartItems);
 			
 			return Response.successResponse(res, 200, 'cart items fetched successfully', cartItems);
 		} catch (error) {
