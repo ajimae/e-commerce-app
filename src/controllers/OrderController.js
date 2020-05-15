@@ -76,7 +76,8 @@ export default class OrderController {
   }
 
   async fulfullOrder(req, res) {
-    const fulfilled = await this.orderService.fulfullOrder(req.params.id);
+    const { decoded: { _id: userId } } = req;
+    const fulfilled = await this.orderService.fulfullOrder({ userId, orderId: req.params.id });
     if (fulfilled) {
       return Response.successResponse(res, 200, 'order cencelled', fulfilled);
     }
