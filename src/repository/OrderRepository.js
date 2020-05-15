@@ -4,7 +4,7 @@
  * @method addProduct
  *
  */
-export default class CartRepository {
+export default class OrderRepository {
 	constructor(model) {
 		this.model = model;
 	}
@@ -73,14 +73,17 @@ export default class CartRepository {
 	 *
 	 * @return
 	 */
-	async fulfullOrder(orderId) {
+	async fulfullOrder({ userId, orderId}) {
 		const order = await this.model.Order.findOne({ _id: orderId });
-		if (!order.fulfilled) {
-			const fulfillOrder = await this.model.Order.findOneAndUpdate({ _id: orderId }, { fulfilled: true }, { useFindAndModify: false });
+		if (order && !order.fulfilled) {
+			const fulfillOrder = await this.model.Order.findOneAndUpdate({ _id: orderId }, { fulfilled: true }, { new: true, useFindAndModify: false });
+
+			// empty user cart items
+			await this.model.Cart.findOneAndUpdate({ userId }, { items: [], subTotal: 0 }, { new: true, useFindAndModify: false });
 
 			return fulfillOrder;
 		}
 
-		throw new Error('order has already been fulfilled.');
+		throw new Error('order does not exist or has already been fulfilled.');
 	}
 }
